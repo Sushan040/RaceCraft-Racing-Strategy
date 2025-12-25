@@ -1,0 +1,11 @@
+Rain Strategy,Verstappen,2023,3
+Monaco Overtake,Hamilton,2024,2
+Safety First,Leclerc,2023,1
+Pit Stop Blitz,Sainz,2022,4
+Quali Attack,Verstappen,2024,2
+Fuel Saver,Hamilton,2023,3
+Late Charge,Leclerc,2024,2
+Aggressive Start,Sainz,2023,3
+Wet Track Master,Russell,2024,1
+Tire Gamble,Norris,2023,2
+Drafting Advantage,Verstappen,2022,3
