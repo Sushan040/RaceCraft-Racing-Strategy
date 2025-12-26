@@ -262,44 +262,100 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+                                               
+    try {
         String name = JOptionPane.showInputDialog(this, "Enter Strategy Name:");
-    String driver = JOptionPane.showInputDialog(this, "Enter Driver Name:");
-    int year = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Race Year:"));
-    int pits = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Number of Pit Stops:"));
+        if (name == null || name.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Strategy Name cannot be empty!");
+            return;
+        }
 
-    Strategy s = new Strategy(name, driver, year, pits);
-    if(raceController.addStrategy(s)) {
-        JOptionPane.showMessageDialog(this, "Strategy added successfully!");
-        loadStrategyTable();
-    } else {
-        JOptionPane.showMessageDialog(this, "Strategy already exists!");
+        String driver = JOptionPane.showInputDialog(this, "Enter Driver Name:");
+        if (driver == null || driver.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Driver Name cannot be empty!");
+            return;
+        }
+
+        String yearStr = JOptionPane.showInputDialog(this, "Enter Race Year:");
+        int year = Integer.parseInt(yearStr);
+        if (year < 1900 || year > 2100) {
+            JOptionPane.showMessageDialog(this, "Enter a valid year between 1900 and 2100!");
+            return;
+        }
+
+        String pitsStr = JOptionPane.showInputDialog(this, "Enter Number of Pit Stops:");
+        int pits = Integer.parseInt(pitsStr);
+        if (pits < 0) {
+            JOptionPane.showMessageDialog(this, "Pit Stops cannot be negative!");
+            return;
+        }
+
+        Strategy s = new Strategy(name, driver, year, pits);
+        if(raceController.addStrategy(s)) {
+            JOptionPane.showMessageDialog(this, "Strategy added successfully!");
+            loadStrategyTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Strategy already exists!");
+        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Year and Pit Stops must be numbers!");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
     }
+
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        int selectedRow = jTable1.getSelectedRow();
+                                      
+    int selectedRow = jTable1.getSelectedRow();
     if(selectedRow < 0) {
         JOptionPane.showMessageDialog(this, "Select a row to edit!");
         return;
     }
 
-    String oldName = jTable1.getValueAt(selectedRow, 1).toString();
     Strategy s = raceController.getAllStrategies().get(selectedRow);
 
-    String newName = JOptionPane.showInputDialog(this, "Edit Strategy Name:", s.getStrategyName());
-    String newDriver = JOptionPane.showInputDialog(this, "Edit Driver Name:", s.getDriverName());
-    int newYear = Integer.parseInt(JOptionPane.showInputDialog(this, "Edit Race Year:", s.getRaceYear()));
-    int newPits = Integer.parseInt(JOptionPane.showInputDialog(this, "Edit Pit Stops:", s.getPitStops()));
+    try {
+        String newName = JOptionPane.showInputDialog(this, "Edit Strategy Name:", s.getStrategyName());
+        if (newName == null || newName.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Strategy Name cannot be empty!");
+            return;
+        }
 
-    s.setStrategyName(newName);
-    s.setDriverName(newDriver);
-    s.setRaceYear(newYear);
-    s.setPitStops(newPits);
+        String newDriver = JOptionPane.showInputDialog(this, "Edit Driver Name:", s.getDriverName());
+        if (newDriver == null || newDriver.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Driver Name cannot be empty!");
+            return;
+        }
 
-    raceController.saveAll(); // Save changes
-    JOptionPane.showMessageDialog(this, "Strategy updated!");
-    loadStrategyTable();
+        int newYear = Integer.parseInt(JOptionPane.showInputDialog(this, "Edit Race Year:", s.getRaceYear()));
+        if (newYear < 1900 || newYear > 2100) {
+            JOptionPane.showMessageDialog(this, "Enter a valid year between 1900 and 2100!");
+            return;
+        }
+
+        int newPits = Integer.parseInt(JOptionPane.showInputDialog(this, "Edit Pit Stops:", s.getPitStops()));
+        if (newPits < 0) {
+            JOptionPane.showMessageDialog(this, "Pit Stops cannot be negative!");
+            return;
+        }
+
+        s.setStrategyName(newName);
+        s.setDriverName(newDriver);
+        s.setRaceYear(newYear);
+        s.setPitStops(newPits);
+
+        raceController.saveAll();
+        JOptionPane.showMessageDialog(this, "Strategy updated successfully!");
+        loadStrategyTable();
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Year and Pit Stops must be numbers!");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+    }
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed

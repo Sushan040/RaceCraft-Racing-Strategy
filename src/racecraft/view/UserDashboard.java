@@ -228,51 +228,88 @@ public class UserDashboard extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+                                        
+    try {
         String keyword = jTextField1.getText().trim();
-    String searchBy = jComboBox1.getSelectedItem().toString();
+        if (keyword.isEmpty()) {
+            // Validation: empty search keyword
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter a search keyword.", "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    List<Strategy> results = raceController.searchStrategies(keyword, searchBy);
-    String[] columns = {"ID", "Strategy Name", "Driver", "Year", "Pit Stops"};
-    Object[][] data = new Object[results.size()][5];
+        String searchBy = jComboBox1.getSelectedItem().toString();
+        if (searchBy.isEmpty() || searchBy.equals(" ")) {
+            // Validation: search criterion not selected
+            javax.swing.JOptionPane.showMessageDialog(this, "Please select a search criteria.", "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    for (int i = 0; i < results.size(); i++) {
-        Strategy s = results.get(i);
-        data[i][0] = i + 1;
-        data[i][1] = s.getStrategyName();
-        data[i][2] = s.getDriverName();
-        data[i][3] = s.getRaceYear();
-        data[i][4] = s.getPitStops();
+        List<Strategy> results = raceController.searchStrategies(keyword, searchBy);
+        if (results.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No strategies found matching the criteria.", "Info", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        String[] columns = {"ID", "Strategy Name", "Driver", "Year", "Pit Stops"};
+        Object[][] data = new Object[results.size()][5];
+
+        for (int i = 0; i < results.size(); i++) {
+            Strategy s = results.get(i);
+            data[i][0] = i + 1;
+            data[i][1] = s.getStrategyName();
+            data[i][2] = s.getDriverName();
+            data[i][3] = s.getRaceYear();
+            data[i][4] = s.getPitStops();
+        }
+
+        DefaultTableModel model = new DefaultTableModel(data, columns);
+        jTable1.setModel(model);
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error occurred while searching: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
 
-    DefaultTableModel model = new DefaultTableModel(data, columns);
-    jTable1.setModel(model);
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void loadStrategyTable() {
-    List<Strategy> list = raceController.getAllStrategies();
-    String[] columns = {"ID", "Strategy Name", "Driver", "Year", "Pit Stops"};
-    Object[][] data = new Object[list.size()][5];
+    
+    try {
+        List<Strategy> list = raceController.getAllStrategies();
+        String[] columns = {"ID", "Strategy Name", "Driver", "Year", "Pit Stops"};
+        Object[][] data = new Object[list.size()][5];
 
-    for (int i = 0; i < list.size(); i++) {
-        Strategy s = list.get(i);
-        data[i][0] = i + 1;
-        data[i][1] = s.getStrategyName();
-        data[i][2] = s.getDriverName();
-        data[i][3] = s.getRaceYear();
-        data[i][4] = s.getPitStops();
+        for (int i = 0; i < list.size(); i++) {
+            Strategy s = list.get(i);
+            data[i][0] = i + 1;
+            data[i][1] = s.getStrategyName();
+            data[i][2] = s.getDriverName();
+            data[i][3] = s.getRaceYear();
+            data[i][4] = s.getPitStops();
+        }
+
+        DefaultTableModel model = new DefaultTableModel(data, columns);
+        jTable1.setModel(model);
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error loading strategy table: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
 
-    DefaultTableModel model = new DefaultTableModel(data, columns);
-    jTable1.setModel(model);
 }
 
 
     private void updateStatistics() {
+        try {
         List<Strategy> strategies = raceController.getAllStrategies();
         int total = strategies.size();
         String recent = total > 0 ? strategies.get(total - 1).getStrategyName() : "N/A";
         jLabel6.setText("Statistics: Total Strategies: " + total + " | Recently Added: " + recent);
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error updating statistics: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
     }
     /**
      * @param args the command line arguments
