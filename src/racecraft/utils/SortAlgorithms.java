@@ -3,50 +3,61 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+// src/racecraft/utils/SortAlgorithm.java
 package racecraft.utils;
 
-import java.util.ArrayList;
+import racecraft.model.Driver;
 import racecraft.model.Strategy;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class SortAlgorithms {
 
-    public static void sortYearAsc(ArrayList<Strategy> list) {
-        for (int i = 0; i < list.size(); i++)
-            for (int j = 0; j < list.size()-1; j++)
-                if (list.get(j).getRaceYear() > list.get(j+1).getRaceYear()) {
-                    Strategy temp = list.get(j);
-                    list.set(j, list.get(j+1));
-                    list.set(j+1, temp);
-                }
+    // Bubble Sort for drivers by experience
+    public static void bubbleSortDriversByExperience(ArrayList<Driver> drivers) { 
+        int n = drivers.size();
+        for (int i = 0; i < n - 1; i++) { 
+            for (int j = 0; j < n - i - 1; j++) { 
+                if (drivers.get(j).getExperience() > drivers.get(j + 1).getExperience()) { 
+                    Driver temp = drivers.get(j);
+                    drivers.set(j, drivers.get(j + 1));
+                    drivers.set(j + 1, temp);
+                } 
+            } 
+        } 
     }
 
-    public static void sortYearDesc(ArrayList<Strategy> list) {
-        for (int i = 0; i < list.size(); i++)
-            for (int j = 0; j < list.size()-1; j++)
-                if (list.get(j).getRaceYear() < list.get(j+1).getRaceYear()) {
-                    Strategy temp = list.get(j);
-                    list.set(j, list.get(j+1));
-                    list.set(j+1, temp);
-                }
+    // Quick Sort for strategies by year
+    public static void quickSortStrategiesByYear(LinkedList<Strategy> strategies) { 
+        quickSortHelper(strategies, 0, strategies.size() - 1); 
     }
 
-    public static void sortNameAsc(ArrayList<Strategy> list) {
-        for (int i = 0; i < list.size(); i++)
-            for (int j = 0; j < list.size()-1; j++)
-                if (list.get(j).getStrategyName().compareToIgnoreCase(list.get(j+1).getStrategyName()) > 0) {
-                    Strategy temp = list.get(j);
-                    list.set(j, list.get(j+1));
-                    list.set(j+1, temp);
-                }
+    private static void quickSortHelper(LinkedList<Strategy> strategies, int low, int high) { 
+        if (low < high) { 
+            int pi = partition(strategies, low, high);
+            quickSortHelper(strategies, low, pi - 1);
+            quickSortHelper(strategies, pi + 1, high);
+        } 
     }
 
-    public static void sortNameDesc(ArrayList<Strategy> list) {
-        for (int i = 0; i < list.size(); i++)
-            for (int j = 0; j < list.size()-1; j++)
-                if (list.get(j).getStrategyName().compareToIgnoreCase(list.get(j+1).getStrategyName()) < 0) {
-                    Strategy temp = list.get(j);
-                    list.set(j, list.get(j+1));
-                    list.set(j+1, temp);
-                }
+    private static int partition(LinkedList<Strategy> strategies, int low, int high) { 
+        int pivot = strategies.get(high).getYear();
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) { 
+            if (strategies.get(j).getYear() < pivot) { 
+                i++;
+                Strategy temp = strategies.get(i);
+                strategies.set(i, strategies.get(j));
+                strategies.set(j, temp);
+            } 
+        }
+
+        Strategy temp = strategies.get(i + 1);
+        strategies.set(i + 1, strategies.get(high));
+        strategies.set(high, temp);
+
+        return i + 1; 
     }
 }

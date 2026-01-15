@@ -1,5 +1,0 @@
-Admin,123,Admin
-Sushan,sushan123,Admin
-user1,abc,User
-Niraj,niraj123,User
-

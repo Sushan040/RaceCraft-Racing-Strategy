@@ -6,27 +6,58 @@
 package racecraft.model;
 
 public class Strategy {
-    private String strategyName;
-    private String driverName;
-    private int raceYear;
-    private int pitStops;
+    private int id;
+    private Driver driver;
+    private Track track;
+    private String tyreType;
+    private int year;
 
-    public Strategy(String strategyName, String driverName, int raceYear, int pitStops) {
-        this.strategyName = strategyName;
-        this.driverName = driverName;
-        this.raceYear = raceYear;
-        this.pitStops = pitStops;
+    public Strategy(int id, Driver driver, Track track, String tyreType, int year) {
+        this.id = id;
+        this.driver = driver;
+        this.track = track;
+        this.tyreType = tyreType;
+        this.year = year;
     }
 
-    // Getters
-    public String getStrategyName() { return strategyName; }
-    public String getDriverName() { return driverName; }
-    public int getRaceYear() { return raceYear; }
-    public int getPitStops() { return pitStops; }
+    // Getters and Setters
+    public int getId() { 
+        return id; 
+    }
 
-    // Setters (optional, for Edit functionality)
-    public void setStrategyName(String strategyName) { this.strategyName = strategyName; }
-    public void setDriverName(String driverName) { this.driverName = driverName; }
-    public void setRaceYear(int raceYear) { this.raceYear = raceYear; }
-    public void setPitStops(int pitStops) { this.pitStops = pitStops; }
+    public void setId(int id) { 
+        this.id = id; 
+    }
+
+    public Driver getDriver() { 
+        return driver; 
+    }
+
+    public void setDriver(Driver driver) { 
+        this.driver = driver; 
+    }
+
+    public Track getTrack() { 
+        return track; 
+    }
+
+    public void setTrack(Track track) { 
+        this.track = track; 
+    }
+
+    public String getTyreType() { 
+        return tyreType; 
+    }
+
+    public void setTyreType(String tyreType) { 
+        this.tyreType = tyreType; 
+    }
+
+    public int getYear() { 
+        return year; 
+    }
+
+    public void setYear(int year) { 
+        this.year = year; 
+    }
 }

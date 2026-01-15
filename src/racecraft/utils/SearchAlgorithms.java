@@ -3,38 +3,63 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+// src/racecraft/utils/SearchAlgorithm.java
 package racecraft.utils;
 
-import java.util.ArrayList;
+import racecraft.model.Driver;
 import racecraft.model.Strategy;
+import racecraft.model.Track;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SearchAlgorithms {
 
-    // Linear Search (partial match)
-    public static ArrayList<Strategy> linearSearch(ArrayList<Strategy> list, String keyword) {
-        ArrayList<Strategy> result = new ArrayList<>();
-
-        for (Strategy s : list) {
-            if (s.getStrategyName().toLowerCase().contains(keyword.toLowerCase())
-             || s.getDriverName().toLowerCase().contains(keyword.toLowerCase())) {
-                result.add(s);
-            }
+    // Linear Search for partial match (e.g., driver name)
+    public static List<Driver> linearSearchDrivers(String query) { 
+        List<Driver> results = new ArrayList<>();
+        for (Driver driver : MemoryManager.getDrivers()) { 
+            if (driver.getName().toLowerCase().contains(query.toLowerCase())) { 
+                results.add(driver); 
+            } 
         }
-        return result;
+        return results; 
     }
 
-    // Binary Search (exact year)
-    public static Strategy binarySearchByYear(ArrayList<Strategy> list, int year) {
-        int low = 0, high = list.size() - 1;
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            int midYear = list.get(mid).getRaceYear();
-
-            if (midYear == year) return list.get(mid);
-            if (midYear < year) low = mid + 1;
-            else high = mid - 1;
+    // Linear Search for tracks
+    public static List<Track> linearSearchTracks(String query) { 
+        List<Track> results = new ArrayList<>();
+        for (Track track : MemoryManager.getTracks()) { 
+            if (track.getName().toLowerCase().contains(query.toLowerCase())) { 
+                results.add(track); 
+            } 
         }
-        return null;
+        return results; 
+    }
+
+    // Binary Search for strategy year (assumes sorted by year)
+    public static Strategy binarySearchStrategyByYear(int year) { 
+        LinkedList<Strategy> strategies = MemoryManager.getStrategies();
+        // Assume sorted; if not, sort first
+        SortAlgorithms.quickSortStrategiesByYear(strategies);
+
+        int low = 0;
+        int high = strategies.size() - 1;
+
+        while (low <= high) { 
+            int mid = low + (high - low) / 2;
+            Strategy midStrat = strategies.get(mid);
+
+            if (midStrat.getYear() == year) { 
+                return midStrat; 
+            } else if (midStrat.getYear() < year) { 
+                low = mid + 1; 
+            } else { 
+                high = mid - 1; 
+            } 
+        }
+
+        return null; 
     }
 }

@@ -6,15 +6,48 @@
 package racecraft.model;
 
 public class Track {
-    private String trackName;
-    private String country;
+    private int id;
+    private String name;
+    private double length;
+    private String difficulty;
 
-    public Track(String trackName, String country) {
-        this.trackName = trackName;
-        this.country = country;
+    public Track(int id, String name, double length, String difficulty) {
+        this.id = id;
+        this.name = name;
+        this.length = length;
+        this.difficulty = difficulty;
     }
 
-    public String getTrackName() {
-        return trackName;
+    // Getters and Setters
+    public int getId() { 
+        return id; 
+    }
+
+    public void setId(int id) { 
+        this.id = id; 
+    }
+
+    public String getName() { 
+        return name; 
+    }
+
+    public void setName(String name) { 
+        this.name = name; 
+    }
+
+    public double getLength() { 
+        return length; 
+    }
+
+    public void setLength(double length) { 
+        this.length = length; 
+    }
+
+    public String getDifficulty() { 
+        return difficulty; 
+    }
+
+    public void setDifficulty(String difficulty) { 
+        this.difficulty = difficulty; 
     }
 }

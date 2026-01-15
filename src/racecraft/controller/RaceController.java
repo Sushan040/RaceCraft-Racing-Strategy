@@ -5,105 +5,279 @@
 
 package racecraft.controller;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import racecraft.model.Driver;
 import racecraft.model.Strategy;
+import racecraft.model.Track;
+import racecraft.utils.MemoryManager;
+import racecraft.utils.SearchAlgorithms;
 import racecraft.utils.SortAlgorithms;
+import racecraft.utils.DataValidator;
+
+import javax.swing.*;
+import java.util.List;
 
 public class RaceController {
-    private ArrayList<Strategy> strategies = new ArrayList<>();
 
-    public RaceController() {
-        loadFromFile();
+    // Driver CRUD
+    public static void addDriver(String name, String ageStr, String expStr, String winsStr) {
+        if (DataValidator.isEmpty(name) || !DataValidator.isPositiveInt(ageStr) || !DataValidator.isPositiveInt(expStr) || !DataValidator.isPositiveInt(winsStr)) {
+            JOptionPane.showMessageDialog(null, "Invalid input");
+            return;
+        }
+        if (DataValidator.isDuplicateDriver(name)) {
+            JOptionPane.showMessageDialog(null, "Duplicate driver");
+            return;
+        }
+        int id = MemoryManager.getDrivers().size() + 1;
+        int age = Integer.parseInt(ageStr);
+        int exp = Integer.parseInt(expStr);
+        int wins = Integer.parseInt(winsStr);
+        MemoryManager.getDrivers().add(new Driver(id, name, age, exp, wins));
     }
 
-    // Load strategies from file
-    private void loadFromFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader("src/data/strategies.txt"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] s = line.split(",");
-                Strategy st = new Strategy(
-                        s[0], // strategyName
-                        s[1], // driverName
-                        Integer.parseInt(s[2]), // raceYear
-                        Integer.parseInt(s[3])  // pitStops
-                );
-                strategies.add(st);
+    public static void updateDriver(int id, String name, int age, int exp, int wins) {
+        for (Driver driver : MemoryManager.getDrivers()) {
+            if (driver.getId() == id) {
+                driver.setName(name);
+                driver.setAge(age);
+                driver.setExperience(exp);
+                driver.setWins(wins);
+                return;
             }
-        } catch (Exception e) {
-            System.out.println("File not found or empty.");
         }
     }
 
-    
-    // Save all strategies
-    public void saveAll() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/data/strategies.txt"))) {
-            for (Strategy s : strategies) {
-                bw.write(s.getStrategyName() + "," +
-                         s.getDriverName() + "," +
-                         s.getRaceYear() + "," +
-                         s.getPitStops());
-                bw.newLine();
+    public static void deleteDriver(int id) {
+        MemoryManager.getDrivers().removeIf(new java.util.function.Predicate<Driver>() {
+        @Override
+        public boolean test(Driver d) {
+            return d.getId() == id;
+    }
+});
+
+    }
+
+    // Strategy CRUD
+    public static void addStrategy(Driver driver, Track track, String tyreType, String yearStr) {
+        if (driver == null || track == null || DataValidator.isEmpty(tyreType) || !DataValidator.isPositiveInt(yearStr)) {
+            JOptionPane.showMessageDialog(null, "Invalid input");
+            return;
+        }
+        int id = MemoryManager.getStrategies().size() + 1;
+        int year = Integer.parseInt(yearStr);
+        Strategy strategy = new Strategy(id, driver, track, tyreType, year);
+        MemoryManager.getStrategies().add(strategy);
+        MemoryManager.getRecentStrategies().enqueue(strategy);
+    }
+
+    public static void updateStrategy(int id, Driver driver, Track track, String tyreType, int year) {
+        for (Strategy strategy : MemoryManager.getStrategies()) {
+            if (strategy.getId() == id) {
+                strategy.setDriver(driver);
+                strategy.setTrack(track);
+                strategy.setTyreType(tyreType);
+                strategy.setYear(year);
+                return;
             }
-        } catch (IOException e) {
-            System.out.println("Save failed");
         }
     }
 
-    // CRUD Operations
-    public boolean addStrategy(Strategy s) {
-        for (Strategy st : strategies) {
-            if (st.getStrategyName().equalsIgnoreCase(s.getStrategyName())) return false;
+    public static void deleteStrategy(int id) {
+        Strategy toDelete = null;
+        for (Strategy strategy : MemoryManager.getStrategies()) {
+            if (strategy.getId() == id) {
+                toDelete = strategy;
+                break;
+            }
         }
-        strategies.add(s);
-        saveAll();
-        return true;
-    }
-
-    public void deleteStrategy(String name) {
-        strategies.removeIf(s -> s.getStrategyName().equalsIgnoreCase(name));
-        saveAll();
-    }
-
-    public ArrayList<Strategy> getAllStrategies() {
-        return strategies;
-    }
-
-    // Sorting
-    public void sortByYear(boolean ascending) {
-        if (ascending) SortAlgorithms.sortYearAsc(strategies);
-        else SortAlgorithms.sortYearDesc(strategies);
-    }
-
-    public void sortByName(boolean ascending) {
-        if (ascending) SortAlgorithms.sortNameAsc(strategies);
-        else SortAlgorithms.sortNameDesc(strategies);
+        if (toDelete != null) {
+            MemoryManager.getStrategies().remove(toDelete);
+            MemoryManager.getUndoStack().push(toDelete);
+        }
     }
     
-    // Search strategies by keyword and field (name, driver, year)
-public ArrayList<Strategy> searchStrategies(String keyword, String by) {
-    ArrayList<Strategy> results = new ArrayList<>();
-    for (Strategy s : strategies) {
-        switch (by.toLowerCase()) {
-            case "name":
-                if (s.getStrategyName().toLowerCase().contains(keyword.toLowerCase()))
+
+    public static void undoDeleteStrategy() {
+        Strategy undone = MemoryManager.getUndoStack().pop();
+        if (undone != null) {
+            MemoryManager.getStrategies().add(undone);
+        }
+    }
+    
+
+
+    public static void addTrack(String name, String lengthStr, String difficulty) {
+        if (DataValidator.isEmpty(name) || DataValidator.isEmpty(lengthStr)) {
+            JOptionPane.showMessageDialog(null, "Name and Length are required!");
+            return;
+        }
+
+        try {
+            double length = Double.parseDouble(lengthStr);
+            if (length <= 0) {
+                JOptionPane.showMessageDialog(null, "Length must be positive!");
+                return;
+            }
+
+            // Optional duplicate check
+            for (Track t : MemoryManager.getTracks()) {
+                if (t.getName().equalsIgnoreCase(name)) {
+                    JOptionPane.showMessageDialog(null, "Track name already exists!");
+                    return;
+                }
+            }
+
+            int id = MemoryManager.getTracks().size() + 1;
+            Track newTrack = new Track(id, name, length, difficulty);
+            MemoryManager.getTracks().add(newTrack);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Invalid length format!");
+        }
+    }
+
+    public static void updateTrack(int id, String name, double length, String difficulty) {
+        for (Track t : MemoryManager.getTracks()) {
+            if (t.getId() == id) {
+                t.setName(name);
+                t.setLength(length);
+                t.setDifficulty(difficulty);
+                return;
+            }
+        }
+    }
+
+    public static void deleteTrack(int id) {
+    java.util.Iterator<Track> iterator = MemoryManager.getTracks().iterator();
+    while (iterator.hasNext()) {
+        Track t = iterator.next();
+        if (t.getId() == id) {
+            iterator.remove();
+        }
+    }
+}
+    
+    // In RaceController.java
+
+public static List<Strategy> searchStrategies(String searchType, String query) {
+    String q = query.trim().toLowerCase();
+    List<Strategy> results = new ArrayList<>();
+
+    if (q.isEmpty()) {
+        return new ArrayList<>(MemoryManager.getStrategies());
+    }
+
+    for (Strategy s : MemoryManager.getStrategies()) {
+        switch (searchType) {
+            case "Driver Name :":
+                if (s.getDriver() != null && s.getDriver().getName().toLowerCase().contains(q))
                     results.add(s);
                 break;
-            case "driver":
-                if (s.getDriverName().toLowerCase().contains(keyword.toLowerCase()))
+            case "Track Name :":
+                if (s.getTrack() != null && s.getTrack().getName().toLowerCase().contains(q))
                     results.add(s);
                 break;
-            case "year":
-                if (String.valueOf(s.getRaceYear()).equals(keyword))
-                    results.add(s);
+            case "Year :":
+                try {
+                    int year = Integer.parseInt(q);
+                    if (s.getYear() == year)
+                        results.add(s);
+                } catch (NumberFormatException ignored) {}
                 break;
-            default:
+            case "Tyre :":
+                if (s.getTyreType() != null && s.getTyreType().toLowerCase().contains(q))
+                    results.add(s);
                 break;
         }
     }
     return results;
 }
 
+public static List<Strategy> sortStrategies(List<Strategy> list, String sortBy, String order) {
+    List<Strategy> sorted = new ArrayList<>(list);
+
+    Comparator<Strategy> comp = null;
+
+switch (sortBy) {
+
+    case "Driver Name :":
+        comp = new Comparator<Strategy>() {
+            @Override
+            public int compare(Strategy s1, Strategy s2) {
+                String name1 = (s1.getDriver() != null) ? s1.getDriver().getName() : "";
+                String name2 = (s2.getDriver() != null) ? s2.getDriver().getName() : "";
+                return name1.compareTo(name2);
+            }
+        };
+        break;
+
+        case "Track Name :":
+            comp = new Comparator<Strategy>() {
+                @Override
+                public int compare(Strategy s1, Strategy s2) {
+                    String name1 = (s1.getTrack() != null) ? s1.getTrack().getName() : "";
+                    String name2 = (s2.getTrack() != null) ? s2.getTrack().getName() : "";
+                    return name1.compareTo(name2);
+                }
+            };
+            break;
+
+        case "Year :":
+            comp = new Comparator<Strategy>() {
+                @Override
+                public int compare(Strategy s1, Strategy s2) {
+                    return Integer.compare(s1.getYear(), s2.getYear());
+                }
+            };
+            break;
+
+        case "Tyre :":
+            comp = new Comparator<Strategy>() {
+                @Override
+                public int compare(Strategy s1, Strategy s2) {
+                    String tyre1 = (s1.getTyreType() != null) ? s1.getTyreType() : "";
+                    String tyre2 = (s2.getTyreType() != null) ? s2.getTyreType() : "";
+                    return tyre1.compareTo(tyre2);
+                }
+            };
+            break;
+
+        default:
+            comp = null;
+            break;
+    };
+
+    if (comp != null) {
+        if ("Descending".equals(order)) {
+            comp = comp.reversed();
+        }
+        sorted.sort(comp);
+    }
+
+    return sorted;
+}
+
+
+    // Search and Sort calls
+    public static List<Driver> searchDrivers(String query) {
+        return SearchAlgorithms.linearSearchDrivers(query);
+    }
+
+    public static List<Track> searchTracks(String query) {
+        return SearchAlgorithms.linearSearchTracks(query);
+    }
+
+    public static Strategy searchStrategyByYear(int year) {
+        return SearchAlgorithms.binarySearchStrategyByYear(year);
+    }
+
+    public static void sortDriversByExperience() {
+        SortAlgorithms.bubbleSortDriversByExperience(MemoryManager.getDrivers());
+    }
+
+    public static void sortStrategiesByYear() {
+        SortAlgorithms.quickSortStrategiesByYear(MemoryManager.getStrategies());
+    }
 }

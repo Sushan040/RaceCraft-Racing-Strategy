@@ -3,18 +3,65 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
+
 package racecraft.model;
 
 public class Driver {
+    private int id;
     private String name;
-    private int experienceYears;
+    private int age;
+    private int experience;
+    private int wins;
 
-    public Driver(String name, int experienceYears) {
+    public Driver(int id, String name, int age, int experience, int wins) {
+        this.id = id;
         this.name = name;
-        this.experienceYears = experienceYears;
+        this.age = age;
+        this.experience = experience;
+        this.wins = wins;
     }
 
-    public String getName() {
-        return name;
+    // Getters and Setters 
+
+    public int getId() { 
+        return id; 
     }
+
+    public void setId(int id) { 
+        this.id = id; 
+    }
+
+    public String getName() { 
+        return name; 
+    }
+
+    public void setName(String name) { 
+        this.name = name; 
+    }
+
+    public int getAge() { 
+        return age; 
+    }
+
+    public void setAge(int age) { 
+        this.age = age; 
+    }
+
+    public int getExperience() { 
+        return experience; 
+    }
+
+    public void setExperience(int experience) { 
+        this.experience = experience; 
+    }
+
+    public int getWins() { 
+        return wins; 
+    }
+
+    public void setWins(int wins) { 
+        this.wins = wins; 
+    }
+
 }
+
