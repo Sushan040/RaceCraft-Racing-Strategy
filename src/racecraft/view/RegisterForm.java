@@ -330,7 +330,10 @@ public class RegisterForm extends javax.swing.JFrame {
 
         // Call controller to register
         AuthController.register(username, password, role);
-
+        jTextField2.setText("");
+        jPasswordField3.setText("");
+        jPasswordField2.setText("");
+        choose_role_group.clearSelection();
         
     }//GEN-LAST:event_jButton3ActionPerformed
 

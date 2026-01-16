@@ -4,6 +4,14 @@
  */
 package racecraft.view;
 
+import racecraft.controller.RaceController;
+import racecraft.model.Strategy;
+import racecraft.utils.MemoryManager;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.DefaultListModel;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 /**
  *
  * @author susha
@@ -15,6 +23,11 @@ public class UserDashboard extends javax.swing.JFrame {
      */
     public UserDashboard() {
         initComponents();
+        setLocationRelativeTo(null);
+        
+        refreshQuickStats();
+        refreshStrategyTable();
+        refreshSearchResultTable(MemoryManager.getStrategies());
     }
 
     /**
@@ -206,6 +219,7 @@ public class UserDashboard extends javax.swing.JFrame {
         jPanel7.setBackground(new java.awt.Color(10, 20, 60));
 
         jTable3.setBackground(new java.awt.Color(15, 35, 80));
+        jTable3.setForeground(new java.awt.Color(255, 255, 255));
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -309,8 +323,14 @@ public class UserDashboard extends javax.swing.JFrame {
         jButton15.setBackground(new java.awt.Color(255, 204, 0));
         jButton15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton15.setText("Search");
+        jButton15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton15ActionPerformed(evt);
+            }
+        });
 
         jTable4.setBackground(new java.awt.Color(15, 35, 80));
+        jTable4.setForeground(new java.awt.Color(255, 255, 255));
         jTable4.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -355,6 +375,11 @@ public class UserDashboard extends javax.swing.JFrame {
         jButton16.setBackground(new java.awt.Color(255, 204, 0));
         jButton16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton16.setText("Sort");
+        jButton16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton16ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -465,8 +490,79 @@ public class UserDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
+        refreshStrategyTable();
+        JOptionPane.showMessageDialog(this, "Strategies refreshed!", "Info", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+        performSearch();
+    }//GEN-LAST:event_jButton15ActionPerformed
+
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+        performSort();
+    }//GEN-LAST:event_jButton16ActionPerformed
+
+    
+        private void refreshQuickStats() {
+        jLabel21.setText("Total Drivers: " + MemoryManager.getDrivers().size());
+        jLabel22.setText("Total Strategies: " + MemoryManager.getStrategies().size());
+
+        // Recent Activities (using the activity log from MemoryManager)
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        List<String> activities = MemoryManager.getRecentActivities();
+
+        for (String activity : activities) {
+            listModel.addElement(activity);
+        }
+
+        jList1.setModel(listModel);
+    }
+
+    private void refreshStrategyTable() {
+        DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+        model.setRowCount(0);
+
+        for (Strategy s : MemoryManager.getStrategies()) {
+            model.addRow(new Object[]{
+                s.getId(),
+                s.getDriver() != null ? s.getDriver().getName() : "N/A",
+                s.getTrack() != null ? s.getTrack().getName() : "N/A",
+                s.getTyreType(),
+                s.getYear()
+            });
+        }
+    }
+
+    private void performSearch() {
+        String searchType = (String) jComboBox5.getSelectedItem();
+        String query = jTextField7.getText().trim();
+
+        List<Strategy> results = RaceController.searchStrategies(searchType, query);
+        refreshSearchResultTable(results);
+    }
+
+    private void performSort() {
+        String sortBy = (String) jComboBox6.getSelectedItem();
+        String order = (String) jComboBox7.getSelectedItem();
+
+        List<Strategy> current = new ArrayList<>(MemoryManager.getStrategies());
+        List<Strategy> sorted = RaceController.sortStrategies(current, sortBy, order);
+        refreshSearchResultTable(sorted);
+    }
+
+    private void refreshSearchResultTable(List<Strategy> strategies) {
+        DefaultTableModel model = (DefaultTableModel) jTable4.getModel();
+        model.setRowCount(0);
+
+        for (Strategy s : strategies) {
+            model.addRow(new Object[]{
+                s.getDriver() != null ? s.getDriver().getName() : "N/A",
+                s.getTrack() != null ? s.getTrack().getName() : "N/A",
+                s.getTyreType(),
+                s.getYear()
+            });
+        }
+    }
 
     /**
      * @param args the command line arguments

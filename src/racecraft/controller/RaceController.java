@@ -7,6 +7,7 @@ package racecraft.controller;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import racecraft.model.Driver;
 import racecraft.model.Strategy;
 import racecraft.model.Track;
@@ -35,6 +36,7 @@ public class RaceController {
         int exp = Integer.parseInt(expStr);
         int wins = Integer.parseInt(winsStr);
         MemoryManager.getDrivers().add(new Driver(id, name, age, exp, wins));
+        MemoryManager.addActivity("Added driver: " + name);
     }
 
     public static void updateDriver(int id, String name, int age, int exp, int wins) {
@@ -44,20 +46,28 @@ public class RaceController {
                 driver.setAge(age);
                 driver.setExperience(exp);
                 driver.setWins(wins);
+                MemoryManager.addActivity("Updated driver ID: " + id);
                 return;
             }
         }
     }
 
-    public static void deleteDriver(int id) {
-        MemoryManager.getDrivers().removeIf(new java.util.function.Predicate<Driver>() {
-        @Override
-        public boolean test(Driver d) {
-            return d.getId() == id;
+public static void deleteDriver(int id) {
+    boolean wasRemoved = false;
+    
+    Iterator<Driver> iterator = MemoryManager.getDrivers().iterator();
+    while (iterator.hasNext()) {
+        Driver d = iterator.next();
+        if (d.getId() == id) {
+            iterator.remove();
+            wasRemoved = true;
+        }
     }
-});
-
+    
+    if (wasRemoved) {
+        MemoryManager.addActivity("Deleted driver ID: " + id);
     }
+}
 
     // Strategy CRUD
     public static void addStrategy(Driver driver, Track track, String tyreType, String yearStr) {
@@ -70,6 +80,14 @@ public class RaceController {
         Strategy strategy = new Strategy(id, driver, track, tyreType, year);
         MemoryManager.getStrategies().add(strategy);
         MemoryManager.getRecentStrategies().enqueue(strategy);
+        
+        String message = "Added strategy: " + 
+                     (driver != null ? driver.getName() : "Unknown") + 
+                     " @ " + 
+                     (track != null ? track.getName() : "Unknown") + 
+                     " (" + year + ")";
+
+        MemoryManager.addActivity(message);
     }
 
     public static void updateStrategy(int id, Driver driver, Track track, String tyreType, int year) {
@@ -79,6 +97,7 @@ public class RaceController {
                 strategy.setTrack(track);
                 strategy.setTyreType(tyreType);
                 strategy.setYear(year);
+                MemoryManager.addActivity("Updated strategy ID: " + id);
                 return;
             }
         }
@@ -89,6 +108,7 @@ public class RaceController {
         for (Strategy strategy : MemoryManager.getStrategies()) {
             if (strategy.getId() == id) {
                 toDelete = strategy;
+                MemoryManager.addActivity("Deleted strategy ID: " + id);
                 break;
             }
         }
@@ -103,6 +123,7 @@ public class RaceController {
         Strategy undone = MemoryManager.getUndoStack().pop();
         if (undone != null) {
             MemoryManager.getStrategies().add(undone);
+            MemoryManager.addActivity("Restored strategy ID: " + undone.getId());
         }
     }
     
@@ -136,6 +157,7 @@ public class RaceController {
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid length format!");
         }
+         MemoryManager.addActivity("Added track: " + name);
     }
 
     public static void updateTrack(int id, String name, double length, String difficulty) {
@@ -144,22 +166,29 @@ public class RaceController {
                 t.setName(name);
                 t.setLength(length);
                 t.setDifficulty(difficulty);
+                MemoryManager.addActivity("Updated track ID: " + id);
                 return;
             }
         }
     }
 
     public static void deleteTrack(int id) {
+    boolean removed = false;
+    
     java.util.Iterator<Track> iterator = MemoryManager.getTracks().iterator();
     while (iterator.hasNext()) {
         Track t = iterator.next();
         if (t.getId() == id) {
             iterator.remove();
+            removed = true;
         }
+    }
+    
+    if (removed) {
+        MemoryManager.addActivity("Deleted track ID: " + id);
     }
 }
     
-    // In RaceController.java
 
 public static List<Strategy> searchStrategies(String searchType, String query) {
     String q = query.trim().toLowerCase();

@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
-import racecraft.utils.Queue;
+import racecraft.utils.DataValidator;
 
 public class AdminDashboard extends javax.swing.JFrame {
 
@@ -207,6 +207,12 @@ public class AdminDashboard extends javax.swing.JFrame {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
+
+        jTabbedPane2.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane2StateChanged(evt);
+            }
+        });
 
         jPanel2.setBackground(new java.awt.Color(10, 20, 60));
 
@@ -736,7 +742,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         jComboBox2.setBackground(new java.awt.Color(15, 35, 80));
         jComboBox2.setForeground(new java.awt.Color(200, 200, 200));
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Low", "Medium", "High" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Soft", "Medium", "Hard" }));
         jComboBox2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(225, 204, 0), 1, true));
 
         jComboBox3.setBackground(new java.awt.Color(15, 35, 80));
@@ -786,21 +792,21 @@ public class AdminDashboard extends javax.swing.JFrame {
                                 .addGroup(jPanel7Layout.createSequentialGroup()
                                     .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel7Layout.createSequentialGroup()
-                                            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(jButton11))
-                                            .addGap(0, 0, Short.MAX_VALUE))
-                                        .addGroup(jPanel7Layout.createSequentialGroup()
                                             .addComponent(jButton8)
                                             .addGap(43, 43, 43)
                                             .addComponent(jButton9)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(jButton12)
                                             .addGap(42, 42, 42)
-                                            .addComponent(jButton10)))
+                                            .addComponent(jButton10))
+                                        .addGroup(jPanel7Layout.createSequentialGroup()
+                                            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(jButton11)
+                                                .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGap(0, 0, Short.MAX_VALUE)))
                                     .addGap(35, 35, 35))
                                 .addGroup(jPanel7Layout.createSequentialGroup()
-                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(0, 0, Short.MAX_VALUE))))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
                             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -808,7 +814,7 @@ public class AdminDashboard extends javax.swing.JFrame {
                                 .addComponent(jLabel17))
                             .addGap(29, 29, 29)
                             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jComboBox3, 0, 96, Short.MAX_VALUE)
+                                .addComponent(jComboBox3, 0, 129, Short.MAX_VALUE)
                                 .addComponent(jComboBox4, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addGap(35, 35, 35))
         );
@@ -880,6 +886,11 @@ public class AdminDashboard extends javax.swing.JFrame {
         jComboBox5.setForeground(new java.awt.Color(255, 255, 255));
         jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Driver Name :", "Track Name :", "Year :", "Tyre :" }));
         jComboBox5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(225, 204, 0), 1, true));
+        jComboBox5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox5ActionPerformed(evt);
+            }
+        });
 
         jTextField7.setBackground(new java.awt.Color(15, 35, 80));
         jTextField7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -933,6 +944,11 @@ public class AdminDashboard extends javax.swing.JFrame {
         jComboBox6.setForeground(new java.awt.Color(255, 255, 255));
         jComboBox6.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Driver Name :", "Track Name :", "Year :", "Tyre :" }));
         jComboBox6.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(225, 204, 0), 1, true));
+        jComboBox6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox6ActionPerformed(evt);
+            }
+        });
 
         jLabel26.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
@@ -1046,51 +1062,88 @@ public class AdminDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField10ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        RaceController.addDriver(
-        jTextField1.getText(),
-        jTextField2.getText(),
-        jTextField3.getText(),
-        jTextField4.getText()
-    );
+        String name = jTextField1.getText().trim();
+        String ageStr = jTextField2.getText().trim();
+        String expStr = jTextField3.getText().trim();
+        String winsStr = jTextField4.getText().trim();
+
+    if (name.isEmpty() || ageStr.isEmpty() || expStr.isEmpty() || winsStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (!DataValidator.isPositiveInt(ageStr) || !DataValidator.isPositiveInt(expStr) || !DataValidator.isPositiveInt(winsStr)) {
+        JOptionPane.showMessageDialog(this, "Age, Experience & Wins must be positive numbers!", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (DataValidator.isDuplicateDriver(name)) {
+        JOptionPane.showMessageDialog(this, "Driver name already exists!", "Duplicate", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    RaceController.addDriver(name, ageStr, expStr, winsStr);
     refreshDriverTable();
     clearDriverForm();
+    loadDriversToCombo(jComboBox3);
+    JOptionPane.showMessageDialog(this, "Driver added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        if (selectedDriver != null) {
-        try {
-            int age = Integer.parseInt(jTextField2.getText());
-            int exp = Integer.parseInt(jTextField3.getText());
-            int wins = Integer.parseInt(jTextField4.getText());
-            
-            RaceController.updateDriver(
-                selectedDriver.getId(),
-                jTextField1.getText(),
-                age, exp, wins
-            );
-            refreshDriverTable();
-            clearDriverForm();
-            selectedDriver = null;
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid number format!", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    } else {
-        JOptionPane.showMessageDialog(this, "Please select a driver first", "Warning", JOptionPane.WARNING_MESSAGE);
+        if (selectedDriver == null) {
+        JOptionPane.showMessageDialog(this, "Please select a driver first!", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String name = jTextField1.getText().trim();
+    String ageStr = jTextField2.getText().trim();
+    String expStr = jTextField3.getText().trim();
+    String winsStr = jTextField4.getText().trim();
+
+    if (name.isEmpty() || ageStr.isEmpty() || expStr.isEmpty() || winsStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "All fields are required for update!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    if (!DataValidator.isPositiveInt(ageStr) || !DataValidator.isPositiveInt(expStr) || !DataValidator.isPositiveInt(winsStr)) {
+        JOptionPane.showMessageDialog(this, "Age, Experience & Wins must be positive numbers!", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        int age = Integer.parseInt(ageStr);
+        int exp = Integer.parseInt(expStr);
+        int wins = Integer.parseInt(winsStr);
+
+        RaceController.updateDriver(selectedDriver.getId(), name, age, exp, wins);
+        refreshDriverTable();
+        clearDriverForm();
+        selectedDriver = null;
+        JOptionPane.showMessageDialog(this, "Driver updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid number format!", "Error", JOptionPane.ERROR_MESSAGE);
     }
         
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        if (selectedDriver != null) {
-        int confirm = JOptionPane.showConfirmDialog(this, 
-            "Delete driver " + selectedDriver.getName() + "?", 
-            "Confirm Delete", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            RaceController.deleteDriver(selectedDriver.getId());
-            refreshDriverTable();
-            clearDriverForm();
-            selectedDriver = null;
-        }
+        if (selectedDriver == null) {
+        JOptionPane.showMessageDialog(this, "Please select a driver to delete first!", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int confirm = JOptionPane.showConfirmDialog(this,
+        "Delete driver: " + selectedDriver.getName() + "?",
+        "Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+        RaceController.deleteDriver(selectedDriver.getId());
+        refreshDriverTable();
+        clearDriverForm();
+        selectedDriver = null;
+        loadDriversToCombo(jComboBox3);
+        updateQuickStats();
+        JOptionPane.showMessageDialog(this, "Driver deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
     }
     }//GEN-LAST:event_jButton14ActionPerformed
 
@@ -1099,14 +1152,31 @@ public class AdminDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        RaceController.addTrack(
-        jTextField5.getText().trim(),
-        jTextField6.getText().trim(),
-        (String) jComboBox1.getSelectedItem()
-    );
-    refreshTrackTable();
-    clearTrackForm();
-    JOptionPane.showMessageDialog(this, "Track added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        String name = jTextField5.getText().trim();
+        String lengthStr = jTextField6.getText().trim();
+        String difficulty = (String) jComboBox1.getSelectedItem();
+
+    // Validation first
+    if (name.isEmpty() || lengthStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Name and Length are required!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        double length = Double.parseDouble(lengthStr);
+        if (length <= 0) {
+            JOptionPane.showMessageDialog(this, "Length must be positive!", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        RaceController.addTrack(name, lengthStr, difficulty);
+        refreshTrackTable();
+        clearTrackForm();
+        loadTracksToCombo(jComboBox4);
+        JOptionPane.showMessageDialog(this, "Track added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Length must be a valid number (e.g. 5.793)", "Invalid Format", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
@@ -1135,25 +1205,21 @@ public class AdminDashboard extends javax.swing.JFrame {
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         if (selectedTrack == null) {
-        JOptionPane.showMessageDialog(this, "Please select a track first!", "Warning", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Please select a track to delete first!", "Warning", JOptionPane.WARNING_MESSAGE);
         return;
     }
-    
-    String name = jTextField5.getText().trim();
-    String lengthStr = jTextField6.getText().trim();
-    String difficulty = (String) jComboBox1.getSelectedItem();
-    
-    try {
-        double length = Double.parseDouble(lengthStr);
-        RaceController.updateTrack(selectedTrack.getId(), name, length, difficulty);
-        
+
+    int confirm = JOptionPane.showConfirmDialog(this,
+        "Delete track: " + selectedTrack.getName() + "?",
+        "Confirm Delete", JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+        RaceController.deleteTrack(selectedTrack.getId());
         refreshTrackTable();
         clearTrackForm();
         selectedTrack = null;
-        
-        JOptionPane.showMessageDialog(this, "Track updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-    } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Length must be a valid number!", "Error", JOptionPane.ERROR_MESSAGE);
+        loadTracksToCombo(jComboBox4);
+        JOptionPane.showMessageDialog(this, "Track deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
     }
     }//GEN-LAST:event_jButton13ActionPerformed
 
@@ -1210,7 +1276,7 @@ public class AdminDashboard extends javax.swing.JFrame {
 
         refreshStrategyTable();
         clearStrategyForm();
-        updateQuickStats();  // Refresh recent list too
+        updateQuickStats();  // Refresh recent list
         JOptionPane.showMessageDialog(this, "Strategy added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
     } catch (NumberFormatException ex) {
@@ -1321,6 +1387,26 @@ public class AdminDashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField7ActionPerformed
 
+    private void jTabbedPane2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane2StateChanged
+        // Check if Home tab (index 0) is selected
+        if (jTabbedPane2.getSelectedIndex() == 0) {
+            updateQuickStats();           // Refresh totals + recent activity list
+        }
+        // Optional: Also refresh combo boxes when switching to Strategies tab
+        else if (jTabbedPane2.getSelectedIndex() == 2) { // Strategies tab
+            loadDriversToCombo(jComboBox3);
+            loadTracksToCombo(jComboBox4);
+        }
+    }//GEN-LAST:event_jTabbedPane2StateChanged
+
+    private void jComboBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox5ActionPerformed
+
+    private void jComboBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox6ActionPerformed
+
     private void loadDriversToCombo(javax.swing.JComboBox<String> combo) {
     combo.removeAllItems();
     for (Driver d : MemoryManager.getDrivers()) {
@@ -1373,13 +1459,15 @@ public class AdminDashboard extends javax.swing.JFrame {
         jLabel21.setText("Total Drivers: " + MemoryManager.getDrivers().size());
         jLabel22.setText("Total Strategies: " + MemoryManager.getStrategies().size());
 
-        // Recent activities (last 5 strategies)
-        Queue<Strategy> recent = MemoryManager.getRecentStrategies();
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (Strategy s : recent) {
-            listModel.addElement(s.getDriver().getName() + " @ " + s.getTrack().getName() + " - " + s.getYear());
-        }
-        jList1.setModel(listModel);
+    // Recent Activities (now shows all types)
+    DefaultListModel<String> listModel = new DefaultListModel<>();
+    List<String> activities = MemoryManager.getRecentActivities();
+
+    for (String activity : activities) {
+        listModel.addElement(activity);
+    }
+
+    jList1.setModel(listModel);
     }
     
     private void fillDriverFormFromSelection() {

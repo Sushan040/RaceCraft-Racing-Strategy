@@ -12,6 +12,7 @@ import racecraft.model.User;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MemoryManager {
     private static ArrayList<Driver> drivers = new ArrayList<>();
@@ -28,11 +29,11 @@ public class MemoryManager {
         drivers.add(new Driver(3, "Charles Leclerc", 25, 6, 5));
         drivers.add(new Driver(4, "Sergio Perez", 33, 13, 6));
         drivers.add(new Driver(5, "Fernando Alonso", 42, 20, 32));
-        drivers.add(new Driver(6, "Lando Norris", 23, 5, 0));
-        drivers.add(new Driver(7, "George Russell", 26, 6, 1));
+        drivers.add(new Driver(6, "Lando Norris", 23, 5, 4));
+        drivers.add(new Driver(7, "George Russell", 26, 6, 2));
         drivers.add(new Driver(8, "Carlos Sainz", 29, 9, 2));
         drivers.add(new Driver(9, "Sebastian Vettel", 36, 16, 53));
-        drivers.add(new Driver(10, "Oscar Piastri", 22, 2, 0));
+        drivers.add(new Driver(10, "Oscar Piastri", 22, 2, 3));
 
         // Preload 10 Tracks
         tracks.add(new Track(1, "Monza", 5.793, "Medium"));
@@ -62,7 +63,7 @@ public class MemoryManager {
         // Preload 2 Users
         users.add(new User("admin", "admin123", "ADMIN"));
         users.add(new User("Sushan", "123", "ADMIN"));
-        users.add(new User("user", "user123", "USER"));
+        users.add(new User("user", "123", "USER"));
     }
 
     // Getters
@@ -88,5 +89,19 @@ public class MemoryManager {
 
     public static Stack<Strategy> getUndoStack() { 
         return undoStack; 
+    }
+    
+    private static final List<String> recentActivities = new ArrayList<>();
+    private static final int MAX_ACTIVITIES = 5;
+
+    public static void addActivity(String action) {
+        recentActivities.add(0, action);  // Add to front → newest first
+        if (recentActivities.size() > MAX_ACTIVITIES) {
+            recentActivities.remove(recentActivities.size() - 1); // Remove oldest
+        }
+    }
+
+    public static List<String> getRecentActivities() {
+        return new ArrayList<>(recentActivities); // Return copy
     }
 }
